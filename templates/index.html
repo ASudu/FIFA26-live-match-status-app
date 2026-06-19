@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIFA World Cup 2026 Live Updates & Matches Dashboard</title>
+    <meta name="description" content="Stay updated with real-time match results, scores, schedules, and live progress of the FIFA World Cup 2026. Select updates and tweet about them instantly.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;500;700;850;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Local Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="header-container">
+            <div class="logo-section">
+                <span class="logo-icon">🏆</span>
+                <div class="logo-text">
+                    <h1>WORLD CUP 2026</h1>
+                    <p>Canada • Mexico • USA</p>
+                </div>
+            </div>
+            
+            <div class="controls-section">
+                <!-- Search -->
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="searchInput" placeholder="Search team, group, city...">
+                </div>
+                
+                <!-- Refresh Button -->
+                <button class="btn-refresh" id="refreshBtn">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                    <span>Refresh Data</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Container -->
+    <main class="dashboard-wrapper">
+        
+        <!-- Tournament Progress Panel -->
+        <section class="progress-container">
+            <div class="progress-header">
+                <span>Tournament Progress</span>
+                <span id="progressText">Loading...</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBarFill"></div>
+            </div>
+        </section>
+        
+        <!-- Stats Overview Row -->
+        <section class="stats-container">
+            <!-- Total Matches -->
+            <div class="stat-card">
+                <div class="stat-icon total">
+                    <i class="fa-solid fa-circle-nodes"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-val" id="statTotal">-</div>
+                    <div class="stat-label">Total Matches</div>
+                </div>
+            </div>
+            <!-- Live Matches -->
+            <div class="stat-card">
+                <div class="stat-icon live">
+                    <i class="fa-solid fa-tower-broadcast"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-val" id="statLive">-</div>
+                    <div class="stat-label">Live Now</div>
+                </div>
+            </div>
+            <!-- Matches Completed -->
+            <div class="stat-card">
+                <div class="stat-icon played">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-val" id="statPlayed">-</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+            </div>
+            <!-- Matches Upcoming -->
+            <div class="stat-card">
+                <div class="stat-icon upcoming">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-val" id="statUpcoming">-</div>
+                    <div class="stat-label">Upcoming</div>
+                </div>
+            </div>
+            <!-- Goals Scored -->
+            <div class="stat-card">
+                <div class="stat-icon goals">
+                    <i class="fa-solid fa-volleyball"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-val" id="statGoals">-</div>
+                    <div class="stat-label">Goals Scored</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Layout Split Grid -->
+        <div class="content-grid">
+            
+            <!-- Left Side: Match Schedule List & Filters -->
+            <section class="matches-panel">
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">
+                        <i class="fa-solid fa-list"></i> All Matches
+                    </button>
+                    <button class="filter-tab live-tab" data-filter="live">
+                        🔴 Live
+                    </button>
+                    <button class="filter-tab" data-filter="upcoming">
+                        <i class="fa-regular fa-clock"></i> Upcoming
+                    </button>
+                    <button class="filter-tab" data-filter="finished">
+                        <i class="fa-solid fa-square-check"></i> Results
+                    </button>
+                </div>
+                
+                <div class="match-list" id="matchesContainer">
+                    <!-- Dynamic Match Cards Rendered by JS -->
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-secondary);">
+                        <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--accent-blue); margin-bottom: 1rem;"></i>
+                        <p>Loading World Cup 2026 matches...</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Right Side: Match Detail Sidebar & Tweet Generator -->
+            <section class="details-panel" id="detailsPanel">
+                
+                <!-- State 1: No Match Selected -->
+                <div class="empty-details" id="emptyDetails">
+                    <div class="empty-icon">⚽</div>
+                    <h3>No Match Selected</h3>
+                    <p>Select any match from the schedule to view official stadium details, referee info, and tweet live updates.</p>
+                </div>
+                
+                <!-- State 2: Active Match Details -->
+                <div class="active-details" id="activeDetails" style="display: none; flex-direction: column; gap: 1.5rem;">
+                    
+                    <!-- Details Header -->
+                    <div class="details-header">
+                        <div class="details-title">
+                            <h2 id="detailStage">First Stage</h2>
+                            <p id="detailGroup">Group A</p>
+                        </div>
+                        <span class="match-badge live details-badge" id="detailMatchTime">90'+5'</span>
+                    </div>
+                    
+                    <!-- Details Scoreboard -->
+                    <div class="details-scoreboard">
+                        <!-- Home -->
+                        <div class="detail-team">
+                            <img id="detailHomeFlag" src="https://flagcdn.com/w80/mx.png" alt="Home flag" onerror="this.src='https://flagcdn.com/w80/un.png'">
+                            <span class="detail-team-name" id="detailHomeName">Mexico</span>
+                        </div>
+                        
+                        <!-- Score Box -->
+                        <div class="detail-score-box">
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <span class="detail-score-num" id="detailScoreHome">2</span>
+                                <span class="detail-vs" id="detailVsLabel" style="display: none;">VS</span>
+                                <span class="detail-score-num" id="detailScoreAway">0</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Away -->
+                        <div class="detail-team">
+                            <img id="detailAwayFlag" src="https://flagcdn.com/w80/za.png" alt="Away flag" onerror="this.src='https://flagcdn.com/w80/un.png'">
+                            <span class="detail-team-name" id="detailAwayName">South Africa</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Info Sections -->
+                    <div class="info-section">
+                        <!-- Match Time -->
+                        <div class="info-item">
+                            <i class="fa-regular fa-calendar-check"></i>
+                            <span class="info-item-label">Date & Time</span>
+                            <span class="info-item-val" id="detailDate">-</span>
+                        </div>
+                        <!-- Stadium -->
+                        <div class="info-item">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span class="info-item-label">Stadium</span>
+                            <span class="info-item-val" id="detailStadium">Azteca Stadium</span>
+                        </div>
+                        <!-- City -->
+                        <div class="info-item">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span class="info-item-label">City</span>
+                            <span class="info-item-val" id="detailCity">Mexico City</span>
+                        </div>
+                        <!-- Referee -->
+                        <div class="info-item">
+                            <i class="fa-solid fa-user-shield"></i>
+                            <span class="info-item-label">Referee</span>
+                            <span class="info-item-val" id="detailReferee">TBD</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Tweet Section -->
+                    <div class="tweet-hub">
+                        <h4>
+                            <i class="fa-brands fa-x-twitter"></i>
+                            <span>Tweet this Match Update</span>
+                        </h4>
+                        <textarea class="tweet-textarea" id="tweetTextarea" placeholder="Write something about the match..."></textarea>
+                        <button class="btn-tweet" id="btnTweet">
+                            <i class="fa-brands fa-x-twitter"></i>
+                            <span>Share on X / Twitter</span>
+                        </button>
+                    </div>
+                    
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <!-- Local Controller Script -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

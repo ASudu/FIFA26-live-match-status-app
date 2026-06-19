@@ -1,0 +1,23 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Local cache/dynamic files
+wc_matches.json
+
+# Environment variables
+.env
+.env.local
+
+# OS Metadata
+.DS_Store
+Thumbs.db
