@@ -10,7 +10,7 @@ The application retrieves match records and real-time live events directly from 
 
 ```mermaid
 graph TD
-    A[User Browser] -->|HTTP Request| B[Flask Server (app.py)]
+    A[User Browser] -->|HTTP Request| B["Flask Server (app.py)"]
     B -->|Fetch JSON| C[FIFA API - api.fifa.com]
     B -->|Fallback| D[Local Cache - wc_matches.json]
     A -->|Display Flags| E[FlagCDN - flagcdn.com]
